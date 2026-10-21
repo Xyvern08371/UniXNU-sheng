@@ -1,9 +1,9 @@
 # Board description of the Xiaomi Pad 6S Pro (sheng, SM8550), read by the unixnu build driver.
 
 [board]
-name = "sheng"
+name = "fuxi"
 soc = "SM8550"
-description = "Xiaomi Pad 6S Pro"
+description = "Xiaomi 13 (SM8550)"
 kit = "sheng"                      # the package/ of this repository appears as kits/sheng in the build tree
 
 # The target OS image: the unchanged iPad7,1 iPadOS 17.7.11 restore image. Give --ipsw PATH to use a local file; without
@@ -35,29 +35,6 @@ windows = [
 
 [kernel]
 defconfig = "sheng_defconfig"
-# Archive builders of the kernel step, in order. Each is a script of the build tree with its arguments. The VerifiedRoot
-# and VirtIO verified bundles are not built here; they need the volume policies of the target image.
-archives = [
-  "build-corecrypto-14.py",
-  "build-corecrypto-14.py --namespace",
-  "build-arm-driver.py ArmDTPlatform",
-  "build-arm-driver.py ArmCpu",
-  "build-arm-driver.py NativeAES",
-  "build-native-aes-bindings.py",
-  "build-arm-driver.py NativeUfs",
-  "build-arm-driver.py NativeVirtioBlock",
-  "build-arm-driver.py NativeRamBlock",
-  "build-native-virtio-bindings.py --component NativeRamBlock --directory build/native-ram-block",
-  "build-native-virtio-bindings.py --component NativeVirtioBlock",
-  "build-mockfs-fixture.py",
-  "build-sheng-platform-power.py",
-  "build-boot-progress.py",
-  "build-libpthread-kernel.py",
-  "build-arm-driver.py NativeAdreno",
-  "build-native-adreno-kits.py",
-  "build-native-adreno-accelerator.py",
-  "build-native-legacy-display.py",
-]
 
 [kernel.prelink]
 tool = "kits/NativePrelink/emit_prelink.py"
@@ -100,10 +77,10 @@ roots = [
 ]
 
 [firmware]
-config = "sheng"                   # Resources/Configs/sheng.toml in the Mu-Silicium checkout (--uefi)
-dsc = "Platforms/Xiaomi/shengPkg/sheng.dsc"
-fd = "Build/shengPkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd"
-preflight = ["scripts/check-sheng.py"]
+config = "fuxi"                   # 需要 uefi-sheng 里有 Resources/Configs/fuxi.toml in the Mu-Silicium checkout (--uefi)
+dsc = "Platforms/Xiaomi/fuxiPkg/fuxi.dsc"
+fd = "Build/fuxiPkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd"
+preflight = ["scripts/check-fuxi.py"]
 submodules = ["Common/Mu", "Common/Mu_OEM_Sample", "Silicium-ACPI", "Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl"]
 patches = ["Resources/MuPatches/Gic-Spurious.patch"]
 packages = [
@@ -123,18 +100,18 @@ packages = [
 
 [firmware.defines]
 ENABLE_SECUREBOOT = "1"
-DEVICE_MODEL = "sheng"
+DEVICE_MODEL = "fuxi"
 MEMORY_PROTECTION = "TRUE"
 SHIP_MODE = "FALSE"
-BUILDID_STRING = "sheng-research"
+BUILDID_STRING = "fuxi-research"
 
 # The ramdisk of the boot image: a FAT volume with the UniXNU config, the kernel, its device tree and
 # the optional trust cache and Data seed. The loader (DarwinBoot) is part of the firmware volume.
 [payload]
-volume = "SHENGESP"
+volume = "FUXIESP"
 size_mib = 192
 loader = "firmware"
-title = "sheng first boot: source 4K XNU to console"
+title = "fuxi first boot: source 4K XNU to console"
 dram_size = "0x80000000"             # SMEM RAM table observed on the device
 skip_setup_tool = "scripts/seed-data-skip-setup.py"   # used by --skip-setup
 panic_screen = true                  # patch panic() screen output into the payload copy of the kernel
@@ -165,27 +142,27 @@ kernel_args = [
   "-apfs_shared_datavolume",
   "offline-key-events=1",
   "native-ufs-root=1",
+  "native-ufs-stats-delay=30",
   "sheng-pmgr=2",
   "armcpu-diagnostics=1",
   "sheng-disable-watchdogd=1",
-  "sheng-disable-jobs=com.apple.identityservicesd,com.apple.locationd,com.apple.CommCenter,com.apple.bluetoothd",
-  "boot-ui-focus3=Preferences",
-  "boot-ui-focus4=SpringBoard",
+  "sheng-disable-jobs=com.apple.identityservicesd,com.apple.locationd,com.apple.CommCenter,com.apple.iconservices.iconservicesagent",
+  "boot-ui-focus=PreBoard",
+  "boot-ui-focus2=SpringBoard",
+  "boot-ui-focus3=backboardd",
+  "boot-ui-focus4=Setup",
   "sheng-smp=1",
   "sheng-cpufreq=3",
   "sheng-touch=4",
   "sheng-aks=1",
   "sheng-gpu-power=9",
+  "boot-diag-resume=0",
   "sheng-gpu-metal=1",
-  "sheng-fb-gpu=1",
-  "sheng-banner=0",
-  "sheng-gpu-perf=8",
   "sheng-gpu-addon=1",
   "armcpu-spi-ipi=1",
   "-no_slto_panic",
   "ml-timeout-lock-panic-scale=40",
   "sheng-touch-hid=1",
-  "sheng-data-persist=2",
 ]
 
 [payload.adt]
