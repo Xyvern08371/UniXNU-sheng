@@ -1,0 +1,9 @@
+diff --git a/makedefs/MakeInc.def b/makedefs/MakeInc.def
+--- a/makedefs/MakeInc.def
++++ b/makedefs/MakeInc.def
+@@ -595,4 +595,4 @@
+ 
+-CXXFLAGS_GEN  = -std=gnu++2b -fsized-deallocation -fapple-kext $(OTHER_CXXFLAGS)
++CXXFLAGS_GEN  = -std=gnu++2b -fsized-deallocation -fapple-kext -DKERNEL $(OTHER_CXXFLAGS)
+ 
+ CXXFLAGS      = $(CXXFLAGS_GEN) \
